@@ -51,6 +51,77 @@
 ; if we did not use kleen plus and star since we had to introduce <datum-repeat> which esentially does the same thing
 ; as kleen-star, which is repeat but it does it in more steps.
 
+(define list-of-numbers?
+  (lambda (lst)
+    (if (null? lst)
+        #t
+        (if (pair? lst)
+            (if (number? (car lst))
+                (list-of-numbers? (cdr lst))
+                #f)
+            #f))))
+
+; Proving the above code
+
+; 1. taking (), we return #t since the only list with length 0 is null list.
+
+; 2. assume list-of-numbers? works on length k. we need to show it works for k+1.
+
+; let such list be lst
+
+; lst has length > 0 thus according to the definition its created with
+; 
+; cons of number and a another-list
+; 
+; the (cdr lst) is lst' which has a length of k.
+; 
+; Accoring to the inductive hypothesis, list-of-numbers? works on lst'.
+; 
+; And accoring to function, car lst is a number and cdr lst is also list-of-number.
+; 
+; hence, lst is a list-of-number.
+; 
+; thus, this function is correct.
+
+              (define nth-elt
+                (lambda (lst n)
+                  (if (null? lst)
+                      (error "nth-elt : list too short")
+                     (if (zero? n)
+                     (car lst)
+                     (nth-elt (cdr lst) (- n 1))))))
+
+            (define list-length
+              (lambda (lst)
+                (if (null? lst)
+                    0
+                    (+ 1 (list-length (cdr lst))))))
+
+; Exercise 2.2.1
+; 
+; both will throw error. nth-elt on zero? which does expect list and list-length on cdr.
+; 
+; list-ref and length also throws error but the context matters. nth-elt and list-legnth are exposing the inner working of the library when reporting error while
+; the other two function does not.
+
+(define nth-elt-2
+  (lambda (lst n)
+    (if (not (pair? lst))
+        (error "nth-elt-2 : not a pair")
+        (if (null? lst)
+            (error "nth-elt : list too short")
+            (if (zero? n)
+                (car lst)
+                (nth-elt (cdr lst) (- n 1)))))))
+
+
+(define list-length-2
+  (lambda (lst)
+    (if (not (list? lst))
+        (error "list-length-2 : not a list")
+        (if (null? lst)
+            0
+            (+ 1 (list-length (cdr lst)))))))
 
 ;  <s-list> ::= (<{symbol-expression}*>)
 ;  <symbol-expression> := <symbol> | <s-list>
