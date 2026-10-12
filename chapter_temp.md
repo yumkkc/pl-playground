@@ -1,0 +1,47 @@
+LcExp ::= Identity
+        | (lambda (identity) LcExp)
+        | (LcExp LcExp)
+
+
+Theorem. All LcExp has balanced number of parenthesis.
+
+Proof.
+
+Let L(n) and R(n) be the number of parenthesis in LcExp
+
+IH => L(n) = R(n) for all expression.
+
+Base case 
+For Identity, this IH is true since L(0) = R(0)
+
+if for all expressions e1..en, L(N) = R(N) is true then
+its true for e where e1...en is subexpression for e.
+
+Now, for (lambda (identity) LcExp)
+
+this has one subexpression, e1. from IH. Let L1 and R1 be left and right paren. for e1.
+
+hence, L1(n) = R1(n)
+
+with the expression, L1(n) + 2 = R1(n) + 2.
+
+(LcExp LcExp)
+
+let e1 and e2 be subexpression with L1, R1, L2, R2 be their corrponsdpoing left and right parens.
+
+According to IH,
+
+L1(n) = R1 (n) ---- (i)
+L2 (n) = R2 (n) ----(ii)
+
+for the expression,
+
+L1 (n) + L2(n) + 1 = R1 (n) + R2 (n) + 1
+from (i) and (ii)
+
+R1(n) + R2(n) + 1 = R1 (n) + R2 (n) + 1
+
+hence, proved
+
+
+
