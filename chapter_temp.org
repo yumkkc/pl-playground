@@ -43,5 +43,19 @@ R1(n) + R2(n) + 1 = R1 (n) + R2 (n) + 1
 
 hence, proved
 
+#+BEGIN_SRC racket
+#lang eopl
+; nth-element: List x Int -> Int
+; usage: nth element in the list
+(define nth-element
+  (lambda (lst n)
+    (if (null? lst)
+        (report-list-null-error n)
+        (if (zero? n)
+            (car lst)
+            (nth-element (cdr lst) (- n 1))))))
 
-
+(define report-list-null-error
+  (lambda (n)
+    (eopl:error 'nth-element "List too short by ~s elements ~%" (+ n 1))))
+#+END_SRC
