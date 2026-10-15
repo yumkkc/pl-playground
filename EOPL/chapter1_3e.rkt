@@ -45,3 +45,14 @@
 (define nth-element-better
   (lambda (lst n)
     (nth-element-helper lst n (better-report-list-error lst n))))
+
+; Exercise 1.11 [*]
+;;  S-list ::= ()
+;;         ::= (S-exp . S-list)
+;;  S-exp  ::= Symbol | S-list
+;;
+;; Even when the recursion of subset-in-s-exp is on sexp, it works since "sexp" basically in
+;;  S-exp  ::= S-list. This is smaller than the original s-list since its "contained inside it".
+;;  This is guarenteed to halt.
+
+;;
