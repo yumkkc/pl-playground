@@ -1,6 +1,8 @@
 > import Test.Hspec
 > import Desc
-
+> import Control.Monad.Except
+  
+  
 Grammers which will be useful ::=
 
 s-list ::= ({s-exp}*)
@@ -97,6 +99,83 @@ Some equivalent in datatype we made above for tests
 > sexpSwap a b (SExpList xs) = SExpList $ swapper a b xs
 
 
-> main :: IO ()
-> main = hspec $ do swapperTests
+Exercise 1.19 [**] (list-set lst n x) returns a list like lst, except that the n-th
+element, using zero-based indexing, is x.
+(list-set '(a b c d) 2 '(1 2))
+(a b (1 2) d) 
+(list-ref (list-set '(a b c d) 3 '(1 5 10)) 3)
+(1 5 10)
 
+We cannot store different types in list here in haskell, so
+
+> listSet :: [a] -> Integer -> a -> WithError [a]
+> listSet [] _ _      = throwError "large index than number of elements"
+> listSet (x:xs) 0 x' = return $ x':xs
+> listSet (x:xs) n x' = do
+>    xs' <- listSet xs (n-1) x'
+>    return $ x' : xs'
+
+Exercise 1.20 [*]
+
+> countOccurrences :: Symbol -> SList -> Integer
+> countOccurrences sym (SList [])     = 0
+> countOccurrences sym (SList (x:xs)) = countOccInSym sym x + countOccurrences sym (SList xs)
+
+
+> countOccInSym :: Symbol -> SExp -> Integer
+> countOccInSym sym (Symbol s) | sym == s  = 1
+>                              | otherwise = 0
+> countOccInSym sym (SExpList xs) = countOccurrences sym xs
+
+> countTests = describe "countOccurences test" $ do
+>   it "test 1" $ do
+>       countOccurrences "a" (parseExp "(a b c)") `shouldBe` 1
+>   it "test 2" $ do
+>       countOccurrences "a" (parseExp "(a b (a b c) c (a))") `shouldBe` 3
+
+Exercise 1.21 (product sos1 sos2)
+
+> product' :: [Symbol] -> [Symbol] -> [(Symbol, Symbol)]
+> product' [] _  = []
+> product' _ []  = []
+> product' xs ys = concatMap (\x -> map (x,) ys) xs
+
+
+> mergePred :: (Integer -> Integer -> Bool) -> [Integer] -> [Integer] -> [Integer]
+> mergePred _ [] b              = b
+> mergePred _ a []              = a
+> mergePred pred a@(x:xs) b@(y:ys) | pred x y    = x : mergePred pred xs b
+>                                  | otherwise   = y : mergePred pred a ys
+
+Exercise 1.28
+merge :: ListOf(Int) -> ListOf(Int) -> ListOf (Int)
+usage? :: merge two sorted list of integers
+
+> merge :: [Integer] -> [Integer] -> [Integer]
+> merge = mergePred (<)
+
+
+Exercise 1.29
+sort :: ListOf (Intger) -> ListOf (Integer)
+usage? :: sort list of integers
+
+> sort :: [Integer] -> [Integer]
+> sort []  = []
+> sort [x] = merge [x] []
+> sort (x:xs) = merge [x] $ sort xs
+
+
+Exercise 1.30 (sort/predicate pred loi) returns a list of elements sorted
+by the predicate.
+
+> sortPredicate :: (Integer -> Integer -> Bool) -> [Integer] -> [Integer]
+> sortPredicate _ [] = []
+> sortPredicate pred [x] = mergePred pred [x] []
+> sortPredicate pred (x:xs) = mergePred pred [x] $ sortPredicate pred xs
+
+This is just a generalized form of sort so sort can be written with this
+
+sort = sortPredicate (<)
+
+> main :: IO ()
+> main = hspec $ do countTests

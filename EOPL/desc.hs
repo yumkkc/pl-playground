@@ -6,6 +6,9 @@ import Text.Parsec.Char
 import Text.Parsec.Combinator
 import Text.Parsec
 import Data.Either
+import Control.Monad.Except
+import Control.Monad.Identity
+import Data.Functor.Identity (Identity(runIdentity))
 
 type Symbol = String
 
@@ -14,6 +17,17 @@ data SExp = Symbol Symbol | SExpList SList
 
 newtype SList = SList [SExp]
   deriving (Eq)
+
+type WithError = ExceptT String Identity  
+
+
+runWithError = runIdentity . runExceptT
+
+
+-- Bintree ::= Int |(Symbol Bintree Bintree)
+
+data BinTree = Leaf Integer | Node Symbol BinTree BinTree
+  deriving (Show, Eq)
 
 
 printSExp :: SExp -> String  
